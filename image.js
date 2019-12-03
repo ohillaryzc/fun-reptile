@@ -16,7 +16,13 @@ const axios = require('axios')
 const cheerio = require('cheerio')
 
 // const BASE_URL = 'https://wallhaven.cc/'
-const BASE_URL = 'https://wallhaven.cc/search?q=id%3A537&categories=111&purity=010&sorting=relevance&order=desc&page=2'
+// const BASE_URL = 'https://wallhaven.cc/search?q=id%3A11135&categories=111&purity=010&sorting=relevance&order=desc&page=16'
+// const BASE_URL = 'https://wallhaven.cc/search?q=id%3A11135&categories=111&purity=010&sorting=relevance&order=desc&page=17'
+// const BASE_URL = 'https://wallhaven.cc/search?q=id%3A11135&categories=111&purity=010&sorting=relevance&order=desc&page=18'
+// const BASE_URL = 'https://wallhaven.cc/search?q=id%3A11135&categories=111&purity=010&sorting=relevance&order=desc&page=19'
+// const BASE_URL = 'https://wallhaven.cc/search?q=id%3A174&categories=110&purity=010&sorting=relevance&order=desc&page=4'
+// const BASE_URL = 'https://wallhaven.cc/search?q=id%3A174&categories=110&purity=010&sorting=relevance&order=desc&page=5'
+const BASE_URL = 'https://wallhaven.cc/search?q=id%3A174&categories=110&purity=010&sorting=relevance&order=desc&page=6'
 
 // axios.get(BASE_URL)
 //   .then(res => {
@@ -36,12 +42,19 @@ axios.get(BASE_URL)
   .then(res => {
     let $ = cheerio.load(res.data, {decodeEntities: false})
     let srcArr = []
+      let span = $('.thumb-info')
     $('.lazyload').each((index, item) => {
       let smallArr = $(item).data('src').split('/')
-      srcArr.push({
-        url: `https://w.wallhaven.cc/full/${smallArr[smallArr.length - 2]}/wallhaven-${smallArr[smallArr.length - 1]}`,
-        fileName: smallArr[smallArr.length - 1]
-      })
+        let obj = {
+            url: `https://w.wallhaven.cc/full/${smallArr[smallArr.length - 2]}/wallhaven-${smallArr[smallArr.length - 1]}`,
+            fileName: smallArr[smallArr.length - 1]
+        }
+        if ($(span[index]).find('.png').length) {
+            let type = smallArr[smallArr.length - 1].split('.')[0] + '.png'
+            obj.url = `https://w.wallhaven.cc/full/${smallArr[smallArr.length - 2]}/wallhaven-${type}`
+            obj.fileName = type
+        }
+        srcArr.push(obj)
     })
     saveImage(srcArr, 0)
   })
